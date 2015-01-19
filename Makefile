@@ -1,29 +1,47 @@
-CFLAGS = -c -fPIC -Wall
+BUILD_APP_TINYPLAY=1
+BUILD_APP_TINYMIX=1
+BUILD_APP_TINYPCMINFO=1
+BUILD_APP_TINYCAP=1
+
+CFLAGS = -g -c -Wall -Os -fdata-sections -ffunction-sections
+
+ifdef BUILD_APP_TINYPLAY
+CFLAGS += -DAPP_TINYPLAY
+endif
+ifdef BUILD_APP_TINYMIX
+CFLAGS += -DAPP_TINYMIX
+endif
+ifdef BUILD_APP_TINYPCMINFO
+CFLAGS += -DAPP_TINYPCMINFO
+endif
+ifdef BUILD_APP_TINYCAP
+CFLAGS += -DAPP_TINYCAP
+endif
+
 INC = include
-OBJECTS = mixer.o pcm.o
-LIB = libtinyalsa.so
+OBJECTS = mixer.o pcm.o tinymix.o tinyplay.o tinycap.o tinypcminfo.o
 CROSS_COMPILE =
+LDFLAGS = -Os -static -Wl,--gc-sections
 
-all: $(LIB) tinyplay tinycap tinymix tinypcminfo
+all: tinytool
 
-tinyplay: $(LIB) tinyplay.o
-	$(CROSS_COMPILE)gcc tinyplay.o -L. -ltinyalsa -o tinyplay
-
-tinycap: $(LIB) tinycap.o
-	$(CROSS_COMPILE)gcc tinycap.o -L. -ltinyalsa -o tinycap
-
-tinymix: $(LIB) tinymix.o
-	$(CROSS_COMPILE)gcc tinymix.o -L. -ltinyalsa -o tinymix
-
-tinypcminfo: $(LIB) tinypcminfo.o
-	$(CROSS_COMPILE)gcc tinypcminfo.o -L. -ltinyalsa -o tinypcminfo
-
-$(LIB): $(OBJECTS)
-	$(CROSS_COMPILE)gcc -shared $(OBJECTS) -o $(LIB)
+tinytool: $(OBJECTS) tinytool.o
+	$(CROSS_COMPILE)gcc $(OBJECTS) tinytool.o $(LDFLAGS) -o tinytool
+ifdef BUILD_APP_TINYPLAY
+	ln -s tinytool tinyplay
+endif
+ifdef BUILD_APP_TINYMIX
+	ln -s tinytool tinymix
+endif
+ifdef BUILD_APP_TINYPCMINFO
+	ln -s tinytool tinypcminfo
+endif
+ifdef BUILD_APP_TINYCAP
+	ln -s tinytool tinycap
+endif
 
 .c.o:
 	$(CROSS_COMPILE)gcc $(CFLAGS) $< -I$(INC)
 
 clean:
-	-rm $(LIB) $(OBJECTS) tinyplay.o tinyplay tinycap.o tinycap \
-	tinymix.o tinymix tinypcminfo.o tinypcminfo
+	-rm -f $(OBJECTS) tinytool tinytool.o tinyplay tinymix tinypcminfo tinycap

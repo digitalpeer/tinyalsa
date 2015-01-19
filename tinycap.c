@@ -69,7 +69,7 @@ void sigint_handler(int sig)
     capturing = 0;
 }
 
-int main(int argc, char **argv)
+int tinycap_main(int argc, char **argv)
 {
     FILE *file;
     struct wav_header header;

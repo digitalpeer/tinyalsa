@@ -71,7 +71,7 @@ void stream_close(int sig)
     close = 1;
 }
 
-int main(int argc, char **argv)
+int tinyplay_main(int argc, char **argv)
 {
     FILE *file;
     struct riff_wave_header riff_wave_header;

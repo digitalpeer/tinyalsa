@@ -42,7 +42,7 @@ static void tinymix_set_value(struct mixer *mixer, const char *control,
                               char **values, unsigned int num_values);
 static void tinymix_print_enum(struct mixer_ctl *ctl, int print_all);
 
-int main(int argc, char **argv)
+int tinymix_main(int argc, char **argv)
 {
     struct mixer *mixer;
     int card = 0;
